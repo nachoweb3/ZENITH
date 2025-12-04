@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Zenith Terminal - Documentación</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        .docs-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 2rem;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .docs-sidebar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            height: fit-content;
+            position: sticky;
+            top: 120px;
+        }
+
+        .docs-content {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+        }
+
+        .docs-nav {
+            margin-bottom: 2rem;
+        }
+
+        .docs-nav h3 {
+            color: var(--primary-color);
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .docs-nav ul {
+            list-style: none;
+        }
+
+        .docs-nav li {
+            margin-bottom: 0.5rem;
+        }
+
+        .docs-nav a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: all var(--transition-fast);
+        }
+
+        .docs-nav a:hover, .docs-nav a.active {
+            color: var(--primary-color);
+            background: var(--bg-hover);
+        }
+
+        .doc-header {
+            border-bottom: 1px solid var(--border-primary);
+            padding-bottom: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .doc-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .doc-header p {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            line-height: 1.6;
+        }
+
+        .doc-section {
+            margin-bottom: 3rem;
+        }
+
+        .doc-section h2 {
+            font-size: 1.8rem;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            color: var(--text-primary);
+        }
+
+        .doc-section h3 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            margin-top: 2rem;
+            color: var(--text-primary);
+        }
+
+        .doc-section p {
+            color: var(--text-secondary);
+            line-height: 1.7;
+            margin-bottom: 1rem;
+        }
+
+        .code-block {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            margin: 1.5rem 0;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: var(--bg-hover);
+            padding: 0.75rem 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .code-lang {
+            color: var(--primary-color);
+            font-size: 0.85rem;
+            font-weight: 600;
+            font-family: var(--font-mono);
+        }
+
+        .copy-code {
+            background: transparent;
+            border: none;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-size: 0.85rem;
+            transition: all var(--transition-fast);
+        }
+
+        .copy-code:hover {
+            background: var(--bg-card);
+            color: var(--primary-color);
+        }
+
+        .code-content {
+            padding: 1.5rem;
+            overflow-x: auto;
+        }
+
+        .code-content pre {
+            color: var(--text-primary);
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .command-demo {
+            background: linear-gradient(135deg, var(--bg-card), var(--bg-tertiary));
+            border: 1px solid var(--border-accent);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .command-demo h4 {
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .terminal-output {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+
+        .feature-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature-card {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+        }
+
+        .feature-card h4 {
+            color: var(--primary-color);
+            margin-bottom: 0.75rem;
+        }
+
+        .feature-card p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .api-reference {
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-lg);
+            padding: 2rem;
+            margin: 2rem 0;
+        }
+
+        .api-endpoint {
+            background: var(--bg-card);
+            border: 1px solid var(--border-primary);
+            border-radius: var(--radius-md);
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .endpoint-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .method {
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-sm);
+            font-weight: 600;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+        }
+
+        .method.get { background: #10b981; color: white; }
+        .method.post { background: #3b82f6; color: white; }
+        .method.put { background: #f59e0b; color: white; }
+        .method.delete { background: #ef4444; color: white; }
+
+        .endpoint-url {
+            font-family: var(--font-mono);
+            color: var(--text-primary);
+        }
+
+        .params-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .params-table th,
+        .params-table td {
+            text-align: left;
+            padding: 0.75rem;
+            border-bottom: 1px solid var(--border-primary);
+        }
+
+        .params-table th {
+            background: var(--bg-hover);
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .params-table code {
+            background: var(--bg-card);
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+            font-family: var(--font-mono);
+            color: var(--primary-color);
+            font-size: 0.85rem;
+        }
+
+        .warning-box {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .warning-box h4 {
+            color: #f59e0b;
+            margin-bottom: 0.75rem;
+        }
+
+        .info-box {
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .info-box h4 {
+            color: #3b82f6;
+            margin-bottom: 0.75rem;
+        }
+
+        @media (max-width: 768px) {
+            .docs-layout {
+                grid-template-columns: 1fr;
+                padding: 1rem;
+            }
+
+            .docs-sidebar {
+                position: static;
+                margin-bottom: 2rem;
+            }
+
+            .doc-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body style="padding-top: 100px;">
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="nav-brand">
+                <div class="logo-container">
+                    <div class="logo-icon">⚡</div>
+                    <span class="logo-text">Zenith Terminal</span>
+                </div>
+            </div>
+            <div class="nav-links">
+                <a href="index.html"><i class="fas fa-home"></i> Inicio</a>
+                <a href="#features"><i class="fas fa-rocket"></i> Características</a>
+                <a href="#pricing"><i class="fas fa-coins"></i> Planes</a>
+                <a href="docs.html" class="active"><i class="fas fa-book"></i> Documentación</a>
+                <button id="loginBtn" class="btn btn-glass">
+                    <i class="fas fa-user"></i> Portal
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Docs Layout -->
+    <div class="docs-layout">
+        <!-- Sidebar -->
+        <aside class="docs-sidebar">
+            <nav class="docs-nav">
+                <h3>Guía Rápida</h3>
+                <ul>
+                    <li><a href="#overview" class="active"><i class="fas fa-eye"></i> Visión General</a></li>
+                    <li><a href="#installation"><i class="fas fa-download"></i> Instalación</a></li>
+                    <li><a href="#quick-start"><i class="fas fa-rocket"></i> Comienzo Rápido</a></li>
+                    <li><a href="#configuration"><i class="fas fa-cog"></i> Configuración</a></li>
+                </ul>
+
+                <h3>Referencia de Comandos</h3>
+                <ul>
+                    <li><a href="#chat-command"><i class="fas fa-comments"></i> zenith chat</a></li>
+                    <li><a href="#terminal-command"><i class="fas fa-terminal"></i> zenith terminal</a></li>
+                    <li><a href="#models-command"><i class="fas fa-brain"></i> zenith models</a></li>
+                    <li><a href="#config-command"><i class="fas fa-sliders-h"></i> zenith config</a></li>
+                </ul>
+
+                <h3>API REST</h3>
+                <ul>
+                    <li><a href="#api-overview"><i class="fas fa-code"></i> API Overview</a></li>
+                    <li><a href="#authentication"><i class="fas fa-key"></i> Autenticación</a></li>
+                    <li><a href="#endpoints"><i class="fas fa-plug"></i> Endpoints</a></li>
+                    <li><a href="#examples"><i class="fas fa-flask"></i> Ejemplos</a></li>
+                </ul>
+
+                <h3>Integraciones</h3>
+                <ul>
+                    <li><a href="#vscode"><i class="fas fa-code"></i> VS Code</a></li>
+                    <li><a href="#github"><i class="fab fa-github"></i> GitHub</a></li>
+                    <li><a href="#docker"><i class="fab fa-docker"></i> Docker</a></li>
+                </ul>
+
+                <h3>Recursos</h3>
+                <ul>
+                    <li><a href="#examples"><i class="fas fa-book-open"></i> Ejemplos</a></li>
+                    <li><a href="#troubleshooting"><i class="fas fa-tools"></i> Troubleshooting</a></li>
+                    <li><a href="#support"><i class="fas fa-life-ring"></i> Soporte</a></li>
+                </ul>
+            </nav>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="docs-content">
+            <!-- Overview Section -->
+            <section id="overview" class="doc-section">
+                <div class="doc-header">
+                    <h1>Zenith Terminal</h1>
+                    <p>Control absoluto de tu terminal con IA multi-modelos. Claude, GPT-4, Llama y más trabajando juntos para automatizar tu desarrollo.</p>
+                </div>
+
+                <div class="info-box">
+                    <h4><i class="fas fa-info-circle"></i> ¿Qué es Zenith Terminal?</h4>
+                    <p>Zenith Terminal es un agente de IA que se integra directamente con tu línea de comandos, permitiéndote controlar tu sistema con lenguaje natural. Puedes pedirle que escriba código, ejecute comandos, analice archivos, o automatice tareas complejas.</p>
+                </div>
+
+                <h2>Características Principales</h2>
+                <div class="feature-grid">
+                    <div class="feature-card">
+                        <h4><i class="fas fa-brain"></i> Multi-Modelos IA</h4>
+                        <p>Acceso a Claude 3.5, GPT-4, Llama 3, Gemini Pro y más. Elige el mejor modelo para cada tarea.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-terminal"></i> Control Terminal</h4>
+                        <p>Ejecuta comandos, scripts y automatizaciones complejas con lenguaje natural.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-code"></i> Experto en Código</h4>
+                        <p>Escribe, depura y optimiza código en +50 lenguajes de programación.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-rocket"></i> Automatización</h4>
+                        <p>Crea workflows complejos, CI/CD pipelines y automatizaciones empresariales.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-shield-alt"></i> Seguridad</h4>
+                        <p>Encriptación de extremo a extremo y aislamiento de datos para máxima seguridad.</p>
+                    </div>
+                    <div class="feature-card">
+                        <h4><i class="fas fa-infinity"></i> Escalabilidad</h4>
+                        <p>Procesa proyectos de cualquier tamaño, desde scripts hasta sistemas masivos.</p>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Installation Section -->
+            <section id="installation" class="doc-section">
+                <h2>Instalación</h2>
+                <p>Zenith Terminal se puede instalar de múltiples formas. Elige la que mejor se adapte a tu flujo de trabajo.</p>
+
+                <h3>Opción 1: NPM (Recomendado)</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre>npm install -g zenith-terminal</pre>
+                    </div>
+                </div>
+
+                <h3>Opción 2: Yarn</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre>yarn global add zenith-terminal</pre>
+                    </div>
+                </div>
+
+                <h3>Opción 3: Binary</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre>curl -sSL install.zenith.ai | sh</pre>
+                    </div>
+                </div>
+
+                <h3>Verificar Instalación</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre>zenith --version</pre>
+                    </div>
+                </div>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Requisitos del Sistema</h4>
+                    <ul>
+                        <li>Node.js 16+ o instalación binaria</li>
+                        <li>Terminal compatible (bash, zsh, PowerShell, etc.)</li>
+                        <li>Conexión a internet para los modelos IA</li>
+                        <li>API Key de Zenith (obtén la tuya en el portal)</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Quick Start Section -->
+            <section id="quick-start" class="doc-section">
+                <h2>Comienzo Rápido</h2>
+                <p>Empieza a usar Zenith Terminal en menos de 5 minutos con estos pasos simples.</p>
+
+                <h3>1. Autenticación</h3>
+                <p>Primero, autentica tu instalación con tu API Key:</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre>zenith login</pre>
+                    </div>
+                </div>
+
+                <h3>2. Iniciar Chat</h3>
+                <p>Abre el chat interactivo con Zenith:</p>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre>zenith chat</pre>
+                    </div>
+                </div>
+
+                <div class="command-demo">
+                    <h4><i class="fas fa-terminal"></i> Ejemplo de Uso</h4>
+                    <div class="terminal-output">
+                        <div style="color: #00D4FF; margin-bottom: 0.5rem;">$ zenith chat</div>
+                        <div style="color: #27C93F;">✅ Zenith Terminal initialized successfully</div>
+                        <div style="color: #00D4FF;">🤖 Connected to Claude 3.5 Sonnet</div>
+                        <div style="color: #FFD23F; margin-top: 1rem;">💭 How can I help you today?</div>
+                        <div style="margin-top: 1rem;">
+                            <span style="color: #B8BCC8;">➤ </span>
+                            <span style="color: #FFFFFF;">Create a React component with TypeScript that fetches user data</span>
+                        </div>
+                        <div style="color: #FFD23F; margin-top: 0.5rem;">🔄 Processing with Claude 3.5...</div>
+                        <div style="margin-top: 0.5rem; padding: 1rem; background: #1A1F3A; border-radius: 8px;">
+                            <pre style="color: #FFFFFF; margin: 0;">import React, { useState, useEffect } from 'react';
+
+interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export const UserComponent: React.FC = () => {
+  const [users, setUsers] = useState&lt;User[]&gt;([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
+
+  const fetchUsers = async () => {
+    try {
+      const response = await fetch('/api/users');
+      const data = await response.json();
+      setUsers(data);
+    } catch (error) {
+      console.error('Error fetching users:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  if (loading) return &lt;div&gt;Loading...&lt;/div&gt;;
+
+  return (
+    &lt;div&gt;
+      &lt;h1&gt;Users&lt;/h1&gt;
+      {users.map(user => (
+        &lt;div key={user.id}&gt;
+          &lt;h3&gt;{user.name}&lt;/h3&gt;
+          &lt;p&gt;{user.email}&lt;/p&gt;
+        &lt;/div&gt;
+      ))}
+    &lt;/div&gt;
+  );
+};</pre>
+                        </div>
+                        <div style="color: #27C93F; margin-top: 0.5rem;">✅ Component created successfully!</div>
+                        <div style="color: #00D4FF;">💡 Would you like me to create the corresponding API endpoint?</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Commands Reference -->
+            <section id="chat-command" class="doc-section">
+                <h2>Comando: zenith chat</h2>
+                <p>Inicia una sesión de chat interactivo con Zenith usando el modelo IA que prefieras.</p>
+
+                <h3>Sintaxis</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre>zenith chat [options] [message]</pre>
+                    </div>
+                </div>
+
+                <h3>Opciones</h3>
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method">FLAG</span>
+                        <span class="endpoint-url">--model, -m</span>
+                    </div>
+                    <p>Modelo IA a usar (claude-3.5, gpt-4, llama-3, gemini-pro)</p>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method">FLAG</span>
+                        <span class="endpoint-url">--context, -c</span>
+                    </div>
+                    <p>Archivo o directorio de contexto para el análisis</p>
+                </div>
+
+                <div class="api-endpoint">
+                    <div class="endpoint-header">
+                        <span class="method">FLAG</span>
+                        <span class="endpoint-url">--output, -o</span>
+                    </div>
+                    <p>Archivo de salida para guardar la respuesta</p>
+                </div>
+
+                <h3>Ejemplos</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre># Iniciar chat con Claude 3.5
+zenith chat --model claude-3.5
+
+# Enviar un mensaje directo
+zenith chat "Optimize this Python code" --context ./src/
+
+# Guardar respuesta en archivo
+zenith chat "Generate API documentation" --output docs.md
+
+# Usar GPT-4 para análisis de seguridad
+zenith chat --model gpt-4 --context ./app/ "Analyze security vulnerabilities"</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- API Reference -->
+            <section id="api-overview" class="doc-section">
+                <h2>API REST</h2>
+                <p>La API de Zenith Terminal permite integrar nuestras capacidades de IA directamente en tus aplicaciones.</p>
+
+                <div class="info-box">
+                    <h4><i class="fas fa-info-circle"></i> Autenticación</h4>
+                    <p>Todas las solicitudes a la API requieren un token de autenticación. Incluye tu API key en el header <code>X-API-Key</code>.</p>
+                </div>
+
+                <h3>Base URL</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">http</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre>https://api.zenith.ai/v1</pre>
+                    </div>
+                </div>
+
+                <div class="api-reference">
+                    <h3>Endpoints Disponibles</h3>
+
+                    <!-- Chat Endpoint -->
+                    <div class="api-endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-url">/chat</span>
+                        </div>
+                        <p>Enviar mensaje a un modelo IA y recibir respuesta</p>
+
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parámetro</th>
+                                    <th>Tipo</th>
+                                    <th>Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>message</code></td>
+                                    <td>string</td>
+                                    <td>Mensaje a enviar al modelo IA</td>
+                                </tr>
+                                <tr>
+                                    <td><code>model</code></td>
+                                    <td>string</td>
+                                    <td>Modelo a usar (claude-3.5, gpt-4, etc.)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>context</code></td>
+                                    <td>array</td>
+                                    <td>Archivos de contexto (opcional)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>stream</code></td>
+                                    <td>boolean</td>
+                                    <td>Respuesta en streaming (default: false)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Terminal Command Endpoint -->
+                    <div class="api-endpoint">
+                        <div class="endpoint-header">
+                            <span class="method post">POST</span>
+                            <span class="endpoint-url">/terminal</span>
+                        </div>
+                        <p>Ejecutar comandos en la terminal con asistencia de IA</p>
+
+                        <table class="params-table">
+                            <thead>
+                                <tr>
+                                    <th>Parámetro</th>
+                                    <th>Tipo</th>
+                                    <th>Descripción</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><code>command</code></td>
+                                    <td>string</td>
+                                    <td>Comando a ejecutar o descripción en lenguaje natural</td>
+                                </tr>
+                                <tr>
+                                    <td><code>directory</code></td>
+                                    <td>string</td>
+                                    <td>Directorio de trabajo (opcional)</td>
+                                </tr>
+                                <tr>
+                                    <td><code>dry_run</code></td>
+                                    <td>boolean</td>
+                                    <td>Simular ejecución sin hacer cambios (default: false)</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Models Endpoint -->
+                    <div class="api-endpoint">
+                        <div class="endpoint-header">
+                            <span class="method get">GET</span>
+                            <span class="endpoint-url">/models</span>
+                        </div>
+                        <p>Listar todos los modelos disponibles</p>
+                    </div>
+                </div>
+
+                <h3>Ejemplo de Integración</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">javascript</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre>const axios = require('axios');
+
+class ZenithClient {
+  constructor(apiKey) {
+    this.apiKey = apiKey;
+    this.baseURL = 'https://api.zenith.ai/v1';
+  }
+
+  async chat(message, model = 'claude-3.5') {
+    try {
+      const response = await axios.post(`${this.baseURL}/chat`, {
+        message,
+        model,
+        stream: false
+      }, {
+        headers: {
+          'X-API-Key': this.apiKey,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return response.data;
+    } catch (error) {
+      throw new Error(`Zenith API Error: ${error.response?.data?.message || error.message}`);
+    }
+  }
+
+  async executeCommand(command, options = {}) {
+    try {
+      const response = await axios.post(`${this.baseURL}/terminal`, {
+        command,
+        ...options
+      }, {
+        headers: {
+          'X-API-Key': this.apiKey,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      return response.data;
+    } catch (error) {
+      throw new Error(`Terminal execution error: ${error.response?.data?.message || error.message}`);
+    }
+  }
+}
+
+// Uso
+const zenith = new ZenithClient('your-api-key-here');
+
+// Chat con IA
+const chatResponse = await zenith.chat(
+  'Create a REST API endpoint for user management',
+  'gpt-4'
+);
+console.log(chatResponse.response);
+
+// Ejecutar comando
+const commandResult = await zenith.executeCommand(
+  'Create a new React component with TypeScript'
+);
+console.log(commandResult.output);</pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Troubleshooting -->
+            <section id="troubleshooting" class="doc-section">
+                <h2>Resolución de Problemas</h2>
+
+                <h3>Problemas Comunes</h3>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Error: "Invalid API Key"</h4>
+                    <p><strong>Causa:</strong> Tu API key es incorrecta o ha expirado.</p>
+                    <p><strong>Solución:</strong> Verifica tu API key en el portal de Zenith y usa <code>zenith login</code> para autenticarte nuevamente.</p>
+                </div>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Error: "Model not available"</h4>
+                    <p><strong>Causa:</strong> El modelo que intentas usar no está disponible en tu plan.</p>
+                    <p><strong>Solución:</strong> Verifica los modelos disponibles en tu plan o actualiza tu suscripción.</p>
+                </div>
+
+                <div class="warning-box">
+                    <h4><i class="fas fa-exclamation-triangle"></i> Error: "Connection timeout"</h4>
+                    <p><strong>Causa:</strong> Problemas de conexión a internet o servidores sobrecargados.</p>
+                    <p><strong>Solución:</strong> Verifica tu conexión e intenta nuevamente en unos minutos.</p>
+                </div>
+
+                <h3>Comandos de Diagnóstico</h3>
+                <div class="code-block">
+                    <div class="code-header">
+                        <span class="code-lang">bash</span>
+                        <button class="copy-code" onclick="copyCode(this)">
+                            <i class="fas fa-copy"></i> Copiar
+                        </button>
+                    </div>
+                    <div class="code-content">
+                        <pre># Verificar versión
+zenith --version
+
+# Verificar configuración
+zenith config --show
+
+# Probar conexión
+zenith ping
+
+# Ver logs
+zenith logs --level debug
+
+# Limpiar caché
+zenith cache --clear</pre>
+                    </div>
+                </div>
+
+                <h3>Soporte</h3>
+                <p>Si necesitas ayuda adicional, contacta a nuestro equipo de soporte:</p>
+                <ul>
+                    <li><strong>Email:</strong> support@zenith.ai</li>
+                    <li><strong>Discord:</strong> <a href="https://discord.gg/zenith" style="color: var(--primary-color);">discord.gg/zenith</a></li>
+                    <li><strong>GitHub Issues:</strong> <a href="https://github.com/zenith-terminal/issues" style="color: var(--primary-color);">github.com/zenith-terminal/issues</a></li>
+                </ul>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        function copyCode(button) {
+            const codeBlock = button.closest('.code-block');
+            const code = codeBlock.querySelector('pre').textContent;
+
+            navigator.clipboard.writeText(code).then(() => {
+                const originalHTML = button.innerHTML;
+                button.innerHTML = '<i class="fas fa-check"></i> Copiado!';
+                button.style.color = '#27C93F';
+
+                setTimeout(() => {
+                    button.innerHTML = originalHTML;
+                    button.style.color = '';
+                }, 2000);
+            });
+        }
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('.docs-nav a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+
+                if (targetSection) {
+                    targetSection.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+
+                    // Update active nav item
+                    document.querySelectorAll('.docs-nav a').forEach(a => a.classList.remove('active'));
+                    this.classList.add('active');
+                }
+            });
+        });
+
+        // Update active nav item on scroll
+        window.addEventListener('scroll', () => {
+            const sections = document.querySelectorAll('.doc-section[id]');
+            const navLinks = document.querySelectorAll('.docs-nav a');
+
+            let current = '';
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop;
+                const sectionHeight = section.clientHeight;
+                if (window.pageYOffset >= sectionTop - 200) {
+                    current = section.getAttribute('id');
+                }
+            });
+
+            navLinks.forEach(link => {
+                link.classList.remove('active');
+                if (link.getAttribute('href') === `#${current}`) {
+                    link.classList.add('active');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

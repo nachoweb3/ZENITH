@@ -1,0 +1,27 @@
+<svg width="16" height="16" viewBox="0 0 16 16" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="16" height="16" fill="#000000"/>
+
+  <!-- Z letter -->
+  <text x="8" y="12"
+        font-family="Courier, monospace"
+        font-size="12"
+        font-weight="bold"
+        fill="#00FF41"
+        text-anchor="middle">Z</text>
+
+  <!-- Brackets -->
+  <text x="1" y="6"
+        font-family="Courier, monospace"
+        font-size="8"
+        fill="#00FF41">[</text>
+  <text x="13" y="6"
+        font-family="Courier, monospace"
+        font-size="8"
+        fill="#00FF41">]</text>
+
+  <!-- Blinking cursor -->
+  <rect x="13" y="8" width="1" height="2" fill="#00FF41">
+    <animate attributeName="opacity" values="1;0.3;1" dur="1s" repeatCount="indefinite"/>
+  </rect>
+</svg>

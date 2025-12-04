@@ -1,0 +1,51 @@
+<svg width="48" height="48" viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="48" height="48" fill="#000000"/>
+
+  <!-- Scanlines -->
+  <defs>
+    <pattern id="scanlines48" patternUnits="userSpaceOnUse" width="3" height="3">
+      <rect width="3" height="1.5" fill="rgba(0, 255, 65, 0.1)"/>
+    </pattern>
+  </defs>
+  <rect width="48" height="48" fill="url(#scanlines48)"/>
+
+  <!-- Logo -->
+  <g transform="translate(24, 24)">
+    <!-- Outer ring -->
+    <circle cx="0" cy="0" r="18" fill="none" stroke="#00FF41" stroke-width="1" opacity="0.8"/>
+
+    <!-- Z letter -->
+    <text x="0" y="6"
+          font-family="Courier, monospace"
+          font-size="16"
+          font-weight="bold"
+          fill="#00FF41"
+          text-anchor="middle">Z</text>
+
+    <!-- Terminal text -->
+    <text x="0" y="12"
+          font-family="Courier, monospace"
+          font-size="4"
+          fill="#00FF41"
+          text-anchor="middle"
+          opacity="0.8">TERMINAL</text>
+  </g>
+
+  <!-- Corner brackets -->
+  <g opacity="0.7">
+    <line x1="4" y1="4" x2="10" y2="4" stroke="#00FF41" stroke-width="1"/>
+    <line x1="4" y1="4" x2="4" y2="10" stroke="#00FF41" stroke-width="1"/>
+    <line x1="44" y1="4" x2="38" y2="4" stroke="#00FF41" stroke-width="1"/>
+    <line x1="44" y1="4" x2="44" y2="10" stroke="#00FF41" stroke-width="1"/>
+    <line x1="4" y1="44" x2="10" y2="44" stroke="#00FF41" stroke-width="1"/>
+    <line x1="4" y1="44" x2="4" y2="38" stroke="#00FF41" stroke-width="1"/>
+    <line x1="44" y1="44" x2="38" y2="44" stroke="#00FF41" stroke-width="1"/>
+    <line x1="44" y1="44" x2="44" y2="38" stroke="#00FF41" stroke-width="1"/>
+  </g>
+
+  <!-- Blinking cursor -->
+  <rect x="30" y="23" width="3" height="4" fill="#00FF41" opacity="0.8">
+    <animate attributeName="opacity" values="0.8;0.2;0.8" dur="1s" repeatCount="indefinite"/>
+  </rect>
+</svg>

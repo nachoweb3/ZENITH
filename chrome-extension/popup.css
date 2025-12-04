@@ -1,0 +1,412 @@
+/* ZENITH TERMINAL Chrome Extension - Retro 90s Style */
+
+@import url('https://fonts.googleapis.com/css2?family=VT323&display=swap');
+
+:root {
+    --terminal-green: #00FF41;
+    --terminal-amber: #FFB000;
+    --terminal-cyan: #00FFFF;
+    --terminal-red: #FF0000;
+    --terminal-black: #0C0C0C;
+    --terminal-gray: #808080;
+    --button-face: #C0C0C0;
+    --button-shadow: #808080;
+    --button-highlight: #FFFFFF;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    width: 380px;
+    height: 500px;
+    background: #1a1a1a;
+    font-family: 'VT323', monospace;
+    overflow: hidden;
+}
+
+/* CRT Container */
+.crt-container {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(145deg, #3a3a3a, #1a1a1a);
+    padding: 15px 10px;
+    border-radius: 10px;
+    box-shadow:
+        0 0 20px rgba(0, 0, 0, 0.8),
+        inset 0 2px 5px rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.crt-frame {
+    width: 100%;
+    height: calc(100% - 30px);
+    background: #000;
+    border-radius: 8px;
+    padding: 3px;
+    box-shadow: inset 0 0 10px rgba(0, 0, 0, 0.9);
+}
+
+.crt-screen {
+    width: 100%;
+    height: 100%;
+    background: var(--terminal-black);
+    border-radius: 5px;
+    position: relative;
+    overflow: hidden;
+}
+
+/* CRT Effects */
+.scanlines {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(0, 255, 65, 0.05) 2px,
+        rgba(0, 255, 65, 0.05) 4px
+    );
+    pointer-events: none;
+    z-index: 1;
+}
+
+.crt-flicker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 255, 65, 0.01);
+    opacity: 0;
+    pointer-events: none;
+    z-index: 2;
+    animation: flicker 0.15s infinite;
+}
+
+@keyframes flicker {
+    0% { opacity: 0; }
+    50% { opacity: 0.1; }
+    100% { opacity: 0; }
+}
+
+/* Terminal Header */
+.terminal-header {
+    background: linear-gradient(90deg, #1a1a1a 0%, #2a2a2a 100%);
+    border-bottom: 1px solid var(--terminal-green);
+    padding: 5px 10px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 11px;
+    color: var(--terminal-green);
+    text-shadow: 0 0 3px var(--terminal-green);
+}
+
+.os-title {
+    font-weight: bold;
+    letter-spacing: 1px;
+}
+
+.system-time {
+    color: var(--terminal-amber);
+}
+
+/* Terminal Body */
+.terminal-body {
+    padding: 10px;
+    height: calc(100% - 25px);
+    overflow-y: auto;
+}
+
+/* ASCII Logo */
+.ascii-logo-small {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.ascii-logo-small pre {
+    font-size: 8px;
+    line-height: 1;
+    color: var(--terminal-green);
+    text-shadow: 0 0 5px var(--terminal-green);
+    margin: 0;
+}
+
+/* Status Matrix */
+.status-matrix {
+    background: rgba(0, 255, 65, 0.05);
+    border: 1px solid var(--terminal-green);
+    border-radius: 3px;
+    padding: 5px;
+    margin-bottom: 10px;
+    font-size: 10px;
+}
+
+.status-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 3px;
+}
+
+.status-label {
+    color: var(--terminal-cyan);
+}
+
+.status-value {
+    font-weight: bold;
+}
+
+.status-value.online {
+    color: var(--terminal-green);
+    text-shadow: 0 0 3px var(--terminal-green);
+}
+
+.status-value.maximum {
+    color: var(--terminal-green);
+    text-shadow: 0 0 3px var(--terminal-green);
+}
+
+.status-value.connected {
+    color: var(--terminal-green);
+    text-shadow: 0 0 3px var(--terminal-green);
+}
+
+.status-value.disconnected {
+    color: var(--terminal-amber);
+    text-shadow: 0 0 3px var(--terminal-amber);
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 10px;
+}
+
+.retro-btn {
+    flex: 1;
+    padding: 6px 8px;
+    background: var(--button-face);
+    border: 2px solid var(--button-shadow);
+    border-right-color: var(--button-highlight);
+    border-bottom-color: var(--button-highlight);
+    color: var(--terminal-black);
+    font-family: 'VT323', monospace;
+    font-size: 10px;
+    font-weight: bold;
+    cursor: pointer;
+    text-transform: uppercase;
+    box-shadow:
+        1px 1px 0 var(--button-highlight),
+        -1px -1px 0 var(--button-shadow);
+    transition: all 0.1s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+}
+
+.retro-btn:hover {
+    background: var(--terminal-green);
+    color: var(--terminal-black);
+}
+
+.retro-btn:active {
+    box-shadow: inset 1px 1px 0 var(--button-shadow);
+    transform: translate(1px, 1px);
+}
+
+.retro-btn.primary {
+    background: var(--terminal-cyan);
+    color: var(--terminal-black);
+}
+
+.retro-btn.secondary {
+    background: var(--button-face);
+    color: var(--terminal-black);
+}
+
+.btn-icon {
+    font-size: 8px;
+}
+
+/* Balance Section */
+.balance-section {
+    background: rgba(0, 255, 65, 0.05);
+    border: 1px solid var(--terminal-green);
+    border-radius: 3px;
+    padding: 8px;
+    margin-bottom: 10px;
+}
+
+.balance-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+    font-size: 10px;
+}
+
+.balance-label {
+    color: var(--terminal-cyan);
+}
+
+.toggle-privacy {
+    cursor: pointer;
+    color: var(--terminal-amber);
+    transition: all 0.2s;
+}
+
+.toggle-privacy:hover {
+    color: var(--terminal-cyan);
+}
+
+.balance-amount {
+    font-size: 16px;
+    font-weight: bold;
+    color: var(--terminal-green);
+    text-shadow: 0 0 5px var(--terminal-green);
+    margin-bottom: 5px;
+}
+
+.currency {
+    font-size: 12px;
+    color: var(--terminal-gray);
+}
+
+.obfuscated {
+    color: var(--terminal-gray);
+    background: repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 2px,
+        rgba(128, 128, 128, 0.3) 2px,
+        rgba(128, 128, 128, 0.3) 4px
+    );
+}
+
+.shadow-info {
+    font-size: 8px;
+    color: var(--terminal-gray);
+}
+
+/* Privacy Protocols */
+.privacy-protocols {
+    background: rgba(0, 255, 255, 0.05);
+    border: 1px solid var(--terminal-cyan);
+    border-radius: 3px;
+    padding: 5px;
+    margin-bottom: 10px;
+}
+
+.protocol-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 3px;
+    font-size: 9px;
+}
+
+.protocol-name {
+    color: var(--terminal-cyan);
+}
+
+.protocol-status {
+    font-weight: bold;
+    color: var(--terminal-green);
+    text-shadow: 0 0 3px var(--terminal-green);
+}
+
+/* Command Line */
+.command-line {
+    display: flex;
+    align-items: center;
+    background: rgba(0, 0, 0, 0.5);
+    border-top: 1px solid var(--terminal-green);
+    padding: 5px;
+    margin-top: auto;
+}
+
+.prompt {
+    color: var(--terminal-green);
+    margin-right: 5px;
+    font-weight: bold;
+    font-size: 10px;
+}
+
+.terminal-input {
+    background: transparent;
+    border: none;
+    color: var(--terminal-green);
+    font-family: 'VT323', monospace;
+    font-size: 10px;
+    outline: none;
+    flex: 1;
+    text-shadow: 0 0 3px var(--terminal-green);
+}
+
+.cursor {
+    color: var(--terminal-green);
+    animation: blink 1s infinite;
+    margin-left: 2px;
+    font-size: 10px;
+}
+
+@keyframes blink {
+    0%, 50% { opacity: 1; }
+    51%, 100% { opacity: 0; }
+}
+
+/* Power Indicator */
+.power-indicator {
+    position: absolute;
+    bottom: 5px;
+    right: 5px;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--terminal-red);
+    box-shadow: 0 0 5px var(--terminal-red);
+}
+
+.power-indicator.active {
+    background: var(--terminal-green);
+    box-shadow: 0 0 5px var(--terminal-green);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.5; }
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--terminal-green);
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--terminal-cyan);
+}
+
+/* Text Selection */
+::selection {
+    background: var(--terminal-green);
+    color: var(--terminal-black);
+}

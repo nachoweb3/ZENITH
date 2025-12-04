@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ZENITH TERMINAL</title>
+    <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+    <!-- Retro CRT Monitor -->
+    <div class="crt-container">
+        <div class="crt-frame">
+            <div class="crt-screen">
+                <div class="scanlines"></div>
+                <div class="crt-flicker"></div>
+
+                <!-- Terminal Header -->
+                <div class="terminal-header">
+                    <span class="os-title">ZENITH v1.0</span>
+                    <span class="system-time" id="popup-time">00:00:00</span>
+                </div>
+
+                <!-- Terminal Content -->
+                <div class="terminal-body">
+                    <!-- ASCII Logo -->
+                    <div class="ascii-logo-small">
+<pre>
+███    ███ ██ ████████ ██    ██
+████  ████ ██    ██    ██    ██
+██ ████ ██ ██    ██    ██    ██
+██  ██  ██ ██    ██    ██    ██
+██      ██ ██    ██     ██████
+</pre>
+                    </div>
+
+                    <!-- Status Matrix -->
+                    <div class="status-matrix">
+                        <div class="status-item">
+                            <span class="status-label">AI:</span>
+                            <span class="status-value online">ONLINE</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">PRIVACY:</span>
+                            <span class="status-value maximum">MAXIMUM</span>
+                        </div>
+                        <div class="status-item">
+                            <span class="status-label">WALLET:</span>
+                            <span class="status-value" id="wallet-status">DISCONNECTED</span>
+                        </div>
+                    </div>
+
+                    <!-- Main Actions -->
+                    <div class="action-buttons">
+                        <button class="retro-btn primary" id="connect-btn">
+                            <span class="btn-icon">⚡</span>
+                            CONNECT
+                        </button>
+                        <button class="retro-btn secondary" id="privacy-btn">
+                            <span class="btn-icon">🔐</span>
+                            STEALTH
+                        </button>
+                        <button class="retro-btn secondary" id="ai-btn">
+                            <span class="btn-icon">🤖</span>
+                            AI
+                        </button>
+                    </div>
+
+                    <!-- Balance Display -->
+                    <div class="balance-section" id="balance-section" style="display: none;">
+                        <div class="balance-header">
+                            <span class="balance-label">BALANCE:</span>
+                            <span class="toggle-privacy" id="toggle-balance">👁️</span>
+                        </div>
+                        <div class="balance-amount" id="balance-display">
+                            <span class="obfuscated">*****.***</span>
+                            <span class="currency">SOL</span>
+                        </div>
+                        <div class="shadow-info">
+                            <small>SHADOW ADDR: <span class="obfuscated">****...****</span></small>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Protocols -->
+                    <div class="privacy-protocols">
+                        <div class="protocol-item">
+                            <span class="protocol-name">MIXING</span>
+                            <span class="protocol-status active">ON</span>
+                        </div>
+                        <div class="protocol-item">
+                            <span class="protocol-name">SHADOW</span>
+                            <span class="protocol-status active">ROT</span>
+                        </div>
+                        <div class="protocol-item">
+                            <span class="protocol-name">STEALTH</span>
+                            <span class="protocol-status active">MAX</span>
+                        </div>
+                    </div>
+
+                    <!-- Command Input -->
+                    <div class="command-line">
+                        <span class="prompt">ZENITH&gt;</span>
+                        <input type="text" id="command-input" class="terminal-input" placeholder="Enter command..." autocomplete="off">
+                        <span class="cursor" id="popup-cursor">█</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Power Button -->
+        <div class="power-indicator active"></div>
+    </div>
+
+    <script src="popup.js"></script>
+</body>
+</html>

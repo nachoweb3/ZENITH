@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "ZENITH TERMINAL - Privacy Wallet",
+  "version": "1.0.0",
+  "description": "The first Solana wallet with AI-powered privacy protocols and retro 90s terminal interface",
+  "permissions": [
+    "storage",
+    "activeTab",
+    "scripting",
+    "notifications"
+  ],
+  "host_permissions": [
+    "https://api.solana.com/*",
+    "https://phantom.app/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "ZENITH TERMINAL",
+    "default_icon": {
+      "16": "icons/icon16.svg",
+      "48": "icons/icon48.svg",
+      "128": "icons/icon.svg"
+    }
+  },
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "css": []
+    }
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["inject.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.svg",
+    "48": "icons/icon48.svg",
+    "128": "icons/icon.svg"
+  },
+  "author": "ZENITH TECHNOLOGIES",
+  "homepage_url": "https://zenith-terminal.dev"
+}
