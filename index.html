@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Web Token Wallet - Secure Crypto Management</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container">
+        <header class="header">
+            <div class="logo">
+                <i class="fas fa-wallet"></i>
+                <h1>Web Token Wallet</h1>
+            </div>
+            <nav class="nav">
+                <button class="nav-btn" id="connectWalletBtn">
+                    <i class="fas fa-plug"></i>
+                    Connect Wallet
+                </button>
+            </nav>
+        </header>
+
+        <main class="main-content">
+            <div class="wallet-section">
+                <div class="wallet-card" id="walletCard">
+                    <div class="wallet-header">
+                        <h2>Your Wallet</h2>
+                        <div class="wallet-address" id="walletAddress">
+                            Not Connected
+                        </div>
+                    </div>
+                    <div class="wallet-balance">
+                        <h3>Total Balance</h3>
+                        <div class="balance-amount" id="totalBalance">$0.00</div>
+                    </div>
+                </div>
+
+                <div class="token-grid" id="tokenGrid">
+                    <!-- Tokens will be dynamically added here -->
+                </div>
+            </div>
+
+            <div class="actions-section">
+                <div class="action-cards">
+                    <div class="action-card">
+                        <i class="fas fa-paper-plane"></i>
+                        <h3>Send</h3>
+                        <p>Transfer tokens to any address</p>
+                        <button class="btn-primary" id="sendBtn">Send</button>
+                    </div>
+                    <div class="action-card">
+                        <i class="fas fa-qrcode"></i>
+                        <h3>Receive</h3>
+                        <p>Get your wallet address</p>
+                        <button class="btn-secondary" id="receiveBtn">Receive</button>
+                    </div>
+                    <div class="action-card">
+                        <i class="fas fa-exchange-alt"></i>
+                        <h3>Swap</h3>
+                        <p>Exchange tokens instantly</p>
+                        <button class="btn-secondary" id="swapBtn">Swap</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="transactions-section">
+                <h2>Recent Transactions</h2>
+                <div class="transaction-list" id="transactionList">
+                    <!-- Transactions will be dynamically added here -->
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Modals -->
+    <div class="modal" id="sendModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Send Tokens</h2>
+            <form id="sendForm">
+                <div class="form-group">
+                    <label for="recipient">Recipient Address</label>
+                    <input type="text" id="recipient" required>
+                </div>
+                <div class="form-group">
+                    <label for="amount">Amount</label>
+                    <input type="number" id="amount" step="0.000001" required>
+                </div>
+                <div class="form-group">
+                    <label for="token">Token</label>
+                    <select id="token">
+                        <option value="ETH">ETH</option>
+                        <!-- More tokens will be added dynamically -->
+                    </select>
+                </div>
+                <button type="submit" class="btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="modal" id="receiveModal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Receive Tokens</h2>
+            <div class="qr-code" id="qrCode">
+                <!-- QR code will be generated here -->
+            </div>
+            <div class="wallet-address-display">
+                <input type="text" id="addressInput" readonly>
+                <button class="btn-copy" id="copyAddressBtn">
+                    <i class="fas fa-copy"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/web3/1.7.0/web3.min.js"></script>
+    <script src="wallet.js"></script>
+</body>
+</html>
