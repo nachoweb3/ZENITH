@@ -14,6 +14,23 @@
     <!-- Google Gemini AI -->
     <script src="https://cdn.jsdelivr.net/npm/@google/generative-ai@0.21.0/dist/generative-ai.min.js"></script>
 
+    <!-- Socket.IO for WebSocket -->
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+
+    <!-- Chart.js for Analytics Dashboard -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <!-- Service Worker Registration -->
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(registration => console.log('SW registered'))
+                    .catch(err => console.log('SW registration failed'));
+            });
+        }
+    </script>
+
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=VT323&family=Space+Mono:wght@400;700&family=Orbitron:wght@400;700;900&display=swap" rel="stylesheet">
 
@@ -394,9 +411,126 @@
             .nav { gap: 10px; }
             .nav-btn { padding: 8px 15px; font-size: 0.9rem; }
         }
+
+        /* Analytics Styles */
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin: 15px 0;
+        }
+
+        .metric {
+            background: rgba(0,0,0,0.5);
+            border: 1px solid #00FF41;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metric:hover {
+            box-shadow: 0 0 15px rgba(0,255,65,0.5);
+            transform: translateY(-2px);
+        }
+
+        .metric h3 {
+            color: #00FFFF;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            font-family: 'Space Mono', monospace;
+        }
+
+        .metric .value {
+            color: #00FF41;
+            font-size: 1.8rem;
+            font-weight: bold;
+            font-family: 'Orbitron', monospace;
+            text-shadow: 0 0 10px #00FF41;
+        }
+
+        .real-time-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0,255,65,0.1);
+            border: 1px solid #00FF41;
+            border-radius: 20px;
+            padding: 8px 15px;
+            color: #00FF41;
+            font-size: 0.8rem;
+            z-index: 1000;
+            animation: pulse 2s infinite;
+        }
+
+        .real-time-indicator.connected {
+            background: rgba(0,255,65,0.2);
+        }
+
+        .real-time-indicator.disconnected {
+            background: rgba(255,0,0,0.2);
+            border-color: #FF0000;
+            color: #FF0000;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 0.8; }
+            50% { opacity: 1; }
+            100% { opacity: 0.8; }
+        }
+
+        .transaction-status {
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            font-family: 'Space Mono', monospace;
+            display: inline-block;
+            margin: 2px 0;
+        }
+
+        .transaction-status.confirmed {
+            background: rgba(0,255,65,0.2);
+            color: #00FF41;
+            border: 1px solid #00FF41;
+        }
+
+        .transaction-status.pending {
+            background: rgba(255,255,0,0.2);
+            color: #FFFF00;
+            border: 1px solid #FFFF00;
+        }
+
+        .transaction-status.failed {
+            background: rgba(255,0,0,0.2);
+            color: #FF0000;
+            border: 1px solid #FF0000;
+        }
+
+        .notification.real-time {
+            background: rgba(0,255,65,0.9);
+            color: #000;
+            font-weight: bold;
+            animation: slideInRight 0.3s ease-out;
+        }
+
+        @keyframes slideInRight {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
     </style>
 </head>
 <body>
+
+    <!-- Real-time indicator -->
+    <div id="realTimeIndicator" class="real-time-indicator disconnected">
+        🔌 Real-time: Disconnected
+    </div>
     <!-- Matrix Rain Background -->
     <div class="matrix-rain" id="matrixRain"></div>
 
@@ -694,7 +828,7 @@ Type 'help' for available commands.
     </div>
 
     <script>
-        // ZENITH WALLET - Complete Implementation
+        // ZENITH WALLET - Enhanced Implementation with WebSocket
         class ZenithWallet {
             constructor() {
                 this.connection = null;
@@ -703,11 +837,234 @@ Type 'help' for available commands.
                 this.publicKey = null;
                 this.isConnected = false;
                 this.balance = 0;
+                this.backendConnected = false;
+                this.backendUrl = 'http://localhost:3002';
+                this.socket = null;
+                this.realTimeUpdates = true;
+                this.analytics = {
+                    transactions: [],
+                    swaps: [],
+                    balanceHistory: [],
+                    networkActivity: []
+                };
 
                 // Initialize immediately
                 this.initializeConnection();
+                this.initializeWebSocket();
                 this.setupEventListeners();
-                console.log('🚀 ZENITH Wallet initialized');
+                this.initializeAnalytics();
+                console.log('🚀 ZENITH Enhanced Wallet initialized');
+            }
+
+            initializeWebSocket() {
+                try {
+                    this.socket = io(this.backendUrl, {
+                        transports: ['websocket', 'polling']
+                    });
+
+                    this.socket.on('connect', () => {
+                        console.log('🔌 WebSocket connected');
+                        this.showNotification('🔌 Real-time updates connected', 'success');
+                    });
+
+                    this.socket.on('disconnect', () => {
+                        console.log('🔌 WebSocket disconnected');
+                        this.showNotification('🔌 Real-time updates disconnected', 'warning');
+                    });
+
+                    this.socket.on('slot_update', (data) => {
+                        this.updateNetworkSlot(data.slot);
+                        this.addNetworkActivity('slot_update', data);
+                    });
+
+                    this.socket.on('balance_update', (data) => {
+                        if (data.publicKey === this.publicKey?.toString()) {
+                            this.updateBalanceDisplay(data);
+                            this.addBalanceHistory(data);
+                        }
+                    });
+
+                    this.socket.on('transaction_update', (data) => {
+                        this.updateTransactionStatus(data);
+                        this.addTransactionToAnalytics(data);
+                    });
+
+                    this.socket.on('analytics_update', (data) => {
+                        this.updateAnalytics(data);
+                    });
+
+                    this.socket.on('server_error', (data) => {
+                        console.error('Server error:', data);
+                        this.showNotification('⚠️ Server error detected', 'warning');
+                    });
+
+                } catch (error) {
+                    console.error('WebSocket initialization failed:', error);
+                }
+            }
+
+            joinWalletRoom(walletAddress) {
+                if (this.socket && walletAddress) {
+                    this.socket.emit('join_wallet', walletAddress);
+                    console.log(`👤 Joined wallet room: ${walletAddress}`);
+                }
+            }
+
+            monitorTransaction(txSignature) {
+                if (this.socket) {
+                    this.socket.emit('monitor_transaction', txSignature);
+                    console.log(`🔍 Monitoring transaction: ${txSignature}`);
+                }
+            }
+
+            updateNetworkSlot(slot) {
+                const slotElement = document.getElementById('networkSlot');
+                if (slotElement) {
+                    slotElement.textContent = slot;
+                }
+
+                // Update network status with real-time info
+                const networkStatus = document.getElementById('networkStatus');
+                if (networkStatus) {
+                    const currentText = networkStatus.textContent;
+                    if (!currentText.includes('Slot:')) {
+                        networkStatus.textContent = `${currentText} | Slot: ${slot}`;
+                    }
+                }
+            }
+
+            updateBalanceDisplay(data) {
+                this.balance = data.solBalance;
+                this.updateStatus('solBalance', this.balance.toFixed(3));
+                this.updateStatus('tokenCount', data.tokenCount.toString());
+
+                // Animate balance change
+                this.animateBalanceChange();
+            }
+
+            animateBalanceChange() {
+                const balanceElement = document.getElementById('solBalance');
+                if (balanceElement) {
+                    balanceElement.style.animation = 'none';
+                    setTimeout(() => {
+                        balanceElement.style.animation = 'glow 0.5s ease-in-out';
+                    }, 10);
+                }
+            }
+
+            addBalanceHistory(data) {
+                this.analytics.balanceHistory.push({
+                    solBalance: data.solBalance,
+                    tokenCount: data.tokenCount,
+                    timestamp: data.timestamp
+                });
+
+                // Keep only last 50 entries
+                if (this.analytics.balanceHistory.length > 50) {
+                    this.analytics.balanceHistory = this.analytics.balanceHistory.slice(-50);
+                }
+
+                this.updateBalanceChart();
+            }
+
+            addTransactionToAnalytics(data) {
+                this.analytics.transactions.push({
+                    signature: data.signature,
+                    status: data.status,
+                    timestamp: data.timestamp
+                });
+            }
+
+            addNetworkActivity(type, data) {
+                this.analytics.networkActivity.push({
+                    type: type,
+                    data: data,
+                    timestamp: Date.now()
+                });
+            }
+
+            updateAnalytics(data) {
+                // Update analytics dashboard
+                const analyticsElement = document.getElementById('analyticsDisplay');
+                if (analyticsElement) {
+                    analyticsElement.innerHTML = `
+                        <div class="analytics-grid">
+                            <div class="metric">
+                                <h3>Active Connections</h3>
+                                <div class="value">${data.activeConnections}</div>
+                            </div>
+                            <div class="metric">
+                                <h3>Wallets Created</h3>
+                                <div class="value">${data.walletsCreated}</div>
+                            </div>
+                            <div class="metric">
+                                <h3>Transactions</h3>
+                                <div class="value">${data.transactionsProcessed}</div>
+                            </div>
+                            <div class="metric">
+                                <h3>Swaps Executed</h3>
+                                <div class="value">${data.swapsExecuted}</div>
+                            </div>
+                        </div>
+                    `;
+                }
+            }
+
+            initializeAnalytics() {
+                // Create analytics dashboard if not exists
+                if (!document.getElementById('analyticsDisplay')) {
+                    const analyticsDiv = document.createElement('div');
+                    analyticsDiv.id = 'analyticsDisplay';
+                    analyticsDiv.className = 'analytics-container';
+                    analyticsDiv.style.cssText = `
+                        background: rgba(0,255,65,0.05);
+                        border: 1px solid #00FF41;
+                        border-radius: 10px;
+                        padding: 20px;
+                        margin: 20px 0;
+                        display: none;
+                    `;
+
+                    // Find a place to insert it (after wallet stats)
+                    const walletStats = document.querySelector('.wallet-stats');
+                    if (walletStats) {
+                        walletStats.parentNode.insertBefore(analyticsDiv, walletStats.nextSibling);
+                    }
+                }
+            }
+
+            updateBalanceChart() {
+                // Create or update balance chart
+                const chartContainer = document.getElementById('balanceChart');
+                if (chartContainer && this.analytics.balanceHistory.length > 1) {
+                    // This would use Chart.js to create a real-time chart
+                    // For now, just log the data
+                    console.log('📊 Balance history updated:', this.analytics.balanceHistory.length, 'entries');
+                }
+            }
+
+            updateTransactionStatus(data) {
+                console.log(`📡 Transaction ${data.signature}: ${data.status}`);
+
+                // Find and update transaction in UI
+                const txElements = document.querySelectorAll(`[data-tx="${data.signature}"]`);
+                txElements.forEach(element => {
+                    element.className = `transaction-status ${data.status}`;
+                    element.textContent = data.status;
+                });
+            }
+
+            updateRealTimeIndicator(connected) {
+                const indicator = document.getElementById('realTimeIndicator');
+                if (indicator) {
+                    if (connected) {
+                        indicator.className = 'real-time-indicator connected';
+                        indicator.textContent = '🔌 Real-time: Connected';
+                    } else {
+                        indicator.className = 'real-time-indicator disconnected';
+                        indicator.textContent = '🔌 Real-time: Disconnected';
+                    }
+                }
             }
 
             setupEventListeners() {
@@ -938,6 +1295,12 @@ Type 'help' for available commands.
                     await this.createShadowAddress();
 
                     console.log('✅ ZENITH wallet creation completed');
+
+                    // Join WebSocket room for real-time updates
+                    if (this.socket) {
+                        this.joinWalletRoom(this.publicKey.toString());
+                        this.updateRealTimeIndicator(true);
+                    }
 
                 } catch (error) {
                     console.error('❌ Error creating ZENITH wallet:', error);
