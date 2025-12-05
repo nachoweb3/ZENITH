@@ -1,0 +1,153 @@
+{
+  "name": "ZENITH Wallet - AI Privacy First",
+  "short_name": "ZENITH Wallet",
+  "description": "The first Solana wallet with AI privacy features and Matrix green theme",
+  "start_url": "/zenith-complete.html",
+  "display": "standalone",
+  "background_color": "#000000",
+  "theme_color": "#00FF41",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "dir": "ltr",
+  "categories": ["finance", "business", "productivity"],
+  "shortcuts": [
+    {
+      "name": "Create Wallet",
+      "short_name": "Create",
+      "description": "Create a new ZENITH wallet",
+      "url": "/zenith-complete.html?action=create",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/96/00FF41/000000?text=+",
+          "sizes": "96x96",
+          "type": "image/svg+xml",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "Privacy Settings",
+      "short_name": "Privacy",
+      "description": "Configure privacy and stealth settings",
+      "url": "/zenith-complete.html?section=privacy",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/96/00FFFF/000000?text=🔒",
+          "sizes": "96x96",
+          "type": "image/svg+xml",
+          "purpose": "any"
+        }
+      ]
+    },
+    {
+      "name": "AI Assistant",
+      "short_name": "AI",
+      "description": "Chat with ZENITH AI assistant",
+      "url": "/zenith-complete.html?section=ai",
+      "icons": [
+        {
+          "src": "https://via.placeholder.com/96/FFB000/000000?text=🤖",
+          "sizes": "96x96",
+          "type": "image/svg+xml",
+          "purpose": "any"
+        }
+      ]
+    }
+  ],
+  "icons": [
+    {
+      "src": "https://via.placeholder.com/192/00FF41/000000?text=Z",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "https://via.placeholder.com/192/00FF41/000000?text=Z",
+      "sizes": "192x192",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "https://via.placeholder.com/512/00FF41/000000?text=Z",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    },
+    {
+      "src": "https://via.placeholder.com/512/00FF41/000000?text=Z",
+      "sizes": "512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "https://via.placeholder.com/1280x720/00FF41/000000?text=ZENITH+Wallet+Home",
+      "sizes": "1280x720",
+      "type": "image/png",
+      "form_factor": "wide",
+      "label": "ZENITH Wallet home screen with premium glassmorphism UI"
+    },
+    {
+      "src": "https://via.placeholder.com/750x1334/00FF41/000000?text=Mobile+View",
+      "sizes": "750x1334",
+      "type": "image/png",
+      "form_factor": "narrow",
+      "label": "ZENITH Wallet mobile responsive design"
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "edge_side_panel": {
+    "preferred_width": 400
+  },
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "protocol_handlers": [
+    {
+      "protocol": "web+zenith",
+      "url": "/zenith-complete.html?protocol=%s"
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/zenith-complete.html",
+      "accept": {
+        "text/json": [".json"],
+        "application/json": [".json"]
+      }
+    }
+  ],
+  "share_target": {
+    "action": "/zenith-complete.html?action=share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "share_target": [
+    {
+      "action": "/zenith-complete.html?action=share",
+      "method": "POST",
+      "enctype": "multipart/form-data",
+      "params": {
+        "title": {
+          "name": "title",
+          "description": "Share title"
+        },
+        "text": {
+          "name": "text",
+          "description": "Share description"
+        },
+        "url": {
+          "name": "url",
+          "description": "Share URL"
+        }
+      }
+    }
+  ]
+}
