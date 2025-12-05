@@ -737,8 +737,43 @@ Type 'help' for available commands.
             }
 
             async initializeConnection() {
-                console.log('🔄 Initializing Solana connection...');
+                console.log('🔄 Initializing ZENITH Backend connection...');
                 this.updateStatus('networkStatus', 'Connecting...');
+
+                try {
+                    // First, connect to our backend
+                    const backendResponse = await fetch('http://localhost:3002/api/health');
+
+                    if (backendResponse.ok) {
+                        const healthData = await backendResponse.json();
+                        console.log('✅ ZENITH Backend connected!');
+                        console.log('🔗 RPC Endpoint:', healthData.rpcEndpoint);
+                        console.log('📊 Current Slot:', healthData.currentSlot);
+
+                        // Initialize Solana connection through backend
+                        this.backendConnected = true;
+                        this.backendUrl = 'http://localhost:3002';
+
+                        this.updateStatus('networkStatus', 'Connected to ZENITH Backend');
+                        this.showNotification('✅ ZENITH Backend connected successfully!', 'success');
+
+                        // Get detailed network info
+                        await this.getNetworkInfo();
+                        return;
+                    } else {
+                        throw new Error('Backend not responding');
+                    }
+
+                } catch (error) {
+                    console.error('❌ Failed to connect to ZENITH Backend:', error);
+
+                    // Fallback to direct RPC connections
+                    await this.connectDirectRPC();
+                }
+            }
+
+            async connectDirectRPC() {
+                console.log('🔄 Falling back to direct RPC connections...');
 
                 try {
                     // Use reliable FREE RPC endpoints with fallbacks
@@ -753,75 +788,56 @@ Type 'help' for available commands.
                         'https://api.mainnet-beta.solana.com'     // Official (last)
                     ];
 
-                    let connected = false;
-
                     for (let i = 0; i < endpoints.length; i++) {
                         try {
                             console.log(`🔄 Trying endpoint ${i + 1}: ${endpoints[i]}`);
 
-                            // Create connection with optimized settings
                             this.connection = new solanaWeb3.Connection(
                                 endpoints[i],
                                 {
                                     commitment: 'confirmed',
-                                    confirmTransactionInitialTimeout: 15000,
-                                    httpHeaders: {
-                                        'User-Agent': 'ZENITH-Wallet/2.0.0',
-                                        'Content-Type': 'application/json'
-                                    }
+                                    confirmTransactionInitialTimeout: 15000
                                 }
                             );
 
-                            // Fast connection test
                             const slot = await Promise.race([
                                 this.connection.getSlot(),
                                 new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
                             ]);
 
                             if (slot) {
-                                console.log(`✅ Connected! Current slot: ${slot}`);
-
-                                // Get network info
-                                try {
-                                    const epochInfo = await this.connection.getEpochInfo();
-                                    console.log(`📅 Epoch: ${epochInfo.epoch}`);
-
-                                    const version = await this.connection.getVersion();
-                                    console.log(`🔧 Solana Version: ${version['solana-core']}`);
-                                } catch (e) {
-                                    console.log('ℹ️ Basic connection established');
-                                }
-
-                                this.updateStatus('networkStatus', 'Connected');
-                                this.showNotification('✅ Solana blockchain connected!', 'success');
-                                connected = true;
-
-                                // Test with a real account
-                                await this.testRealConnection();
+                                console.log(`✅ Direct RPC Connected! Slot: ${slot}`);
+                                this.updateStatus('networkStatus', 'Direct RPC Connected');
+                                this.showNotification('⚠️ Using direct RPC (Backend unavailable)', 'warning');
                                 return;
                             }
 
                         } catch (error) {
                             console.warn(`❌ Endpoint ${i + 1} failed:`, error.message);
-
-                            // Don't wait too much between retries
-                            if (i < endpoints.length - 1) {
-                                await new Promise(resolve => setTimeout(resolve, 300));
-                            }
                         }
                     }
 
-                    if (!connected) {
-                        throw new Error('All RPC endpoints failed');
-                    }
+                    throw new Error('All endpoints failed');
 
                 } catch (error) {
-                    console.error('❌ Failed to connect to Solana:', error);
-                    this.updateStatus('networkStatus', 'Connection Failed');
-                    this.showNotification('⚠️ All RPC endpoints failed. Using offline mode...', 'warning');
-
-                    // Enable offline mode for testing
+                    console.error('❌ All connections failed:', error);
                     this.enableOfflineMode();
+                }
+            }
+
+            async getNetworkInfo() {
+                try {
+                    const response = await fetch(`${this.backendUrl}/api/network/info`);
+                    if (response.ok) {
+                        const networkData = await response.json();
+                        console.log('🌐 Network Info:', networkData);
+
+                        // Update UI with network details
+                        const statusText = `${networkData.slot} | Epoch: ${networkData.epoch}`;
+                        document.getElementById('networkStatus').textContent = statusText;
+                    }
+                } catch (error) {
+                    console.log('ℹ️ Could not fetch detailed network info');
                 }
             }
 
@@ -861,70 +877,168 @@ Type 'help' for available commands.
 
             async createNewWallet() {
                 try {
-                    console.log('🔄 Creating REAL Solana wallet...');
-                    this.showNotification('Creating REAL blockchain wallet...', 'info');
+                    console.log('🔄 Creating ZENITH Solana wallet...');
+                    this.showNotification('Creating ZENITH blockchain wallet...', 'info');
 
-                    // Enhanced validation
-                    if (typeof solanaWeb3 === 'undefined') {
-                        throw new Error('Solana Web3 library not loaded');
+                    let walletData;
+
+                    // Try backend first, fallback to local generation
+                    if (this.backendConnected) {
+                        try {
+                            const response = await fetch(`${this.backendUrl}/api/wallet/generate`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' }
+                            });
+
+                            if (response.ok) {
+                                walletData = await response.json();
+                                console.log('✅ Wallet created via ZENITH Backend');
+                            } else {
+                                throw new Error('Backend wallet generation failed');
+                            }
+                        } catch (error) {
+                            console.log('⚠️ Backend generation failed, using local:', error.message);
+                            walletData = await this.createLocalWallet();
+                        }
+                    } else {
+                        walletData = await this.createLocalWallet();
                     }
-                    if (typeof bip39 === 'undefined') {
-                        throw new Error('BIP39 library not loaded');
+
+                    // Validate the created wallet
+                    if (!walletData.success || !walletData.publicKey) {
+                        throw new Error('Invalid wallet data received');
                     }
 
-                    // Generate truly random mnemonic with entropy validation
-                    const mnemonic = bip39.generateMnemonic(128); // 12 words
-                    const entropy = bip39.mnemonicToEntropy(mnemonic);
-
-                    if (!bip39.validateMnemonic(mnemonic)) {
-                        throw new Error('Generated mnemonic validation failed');
-                    }
-
-                    console.log('🌱 Mnemonic validated with entropy:', entropy.substring(0, 16) + '...');
-
-                    // Create seed and derive keypair with proper derivation path
-                    const seed = bip39.mnemonicToSeedSync(mnemonic);
-                    const derivationPath = "m/44'/501'/0'/0'"; // Solana derivation path
-                    const derivedSeed = this.deriveSolanaKey(seed, derivationPath);
-
-                    // Create secure keypair
-                    this.keypair = solanaWeb3.Keypair.fromSeed(derivedSeed);
-                    this.publicKey = this.keypair.publicKey;
-                    this.privateKey = this.keypair.secretKey; // Store securely
+                    // Create keypair from public key for UI purposes
+                    this.publicKey = new solanaWeb3.PublicKey(walletData.publicKey);
                     this.isConnected = true;
+                    this.secretKey = walletData.secretKey;
 
-                    // Validate the created address
-                    const addressString = this.publicKey.toString();
-                    if (addressString.length !== 44 || !addressString.startsWith('[')) {
-                        throw new Error('Invalid wallet address generated');
-                    }
+                    console.log('💳 ZENITH wallet created:', this.publicKey.toString());
 
-                    console.log('💳 REAL wallet created:', addressString);
-
-                    // Test blockchain connection immediately
+                    // Test blockchain connection
                     await this.testBlockchainConnection();
 
-                    // Update UI with real-time validation
+                    // Update UI
                     this.updateWalletAddress();
-                    this.updateStatus('walletType', 'Generated');
+                    this.updateStatus('walletType', 'ZENITH Generated');
 
-                    // Get REAL balance from blockchain
+                    // Get real balance
                     await this.updateBalance();
 
-                    // Enhanced security display
-                    this.displaySecureMnemonic(mnemonic);
+                    // Show enhanced security display
+                    this.displayZenithMnemonic(walletData.warning);
 
-                    this.showNotification('🎉 REAL Solana wallet created successfully!', 'success');
+                    this.showNotification('🎉 ZENITH wallet created successfully!', 'success');
 
-                    // Enhanced rabbit animation
+                    // Start animations
                     this.animateRabbit();
 
-                    // Log wallet creation securely
-                    console.log('✅ Wallet creation completed successfully');
+                    // Create shadow address for privacy
+                    await this.createShadowAddress();
+
+                    console.log('✅ ZENITH wallet creation completed');
 
                 } catch (error) {
-                    console.error('❌ Error creating REAL wallet:', error);
-                    this.showNotification('❌ Failed to create REAL wallet: ' + error.message, 'error');
+                    console.error('❌ Error creating ZENITH wallet:', error);
+                    this.showNotification('❌ Failed to create wallet: ' + error.message, 'error');
+                }
+            }
+
+            async createLocalWallet() {
+                // Enhanced validation
+                if (typeof solanaWeb3 === 'undefined') {
+                    throw new Error('Solana Web3 library not loaded');
+                }
+                if (typeof bip39 === 'undefined') {
+                    throw new Error('BIP39 library not loaded');
+                }
+
+                // Generate truly random mnemonic with entropy validation
+                const mnemonic = bip39.generateMnemonic(128); // 12 words
+                const entropy = bip39.mnemonicToEntropy(mnemonic);
+
+                if (!bip39.validateMnemonic(mnemonic)) {
+                    throw new Error('Generated mnemonic validation failed');
+                }
+
+                // Create seed and derive keypair
+                const seed = bip39.mnemonicToSeedSync(mnemonic);
+                const derivedSeed = seed.slice(0, 32);
+
+                // Create secure keypair
+                const keypair = solanaWeb3.Keypair.fromSeed(derivedSeed);
+
+                const bs58 = require('bs58');
+                const base58Secret = bs58.encode(Buffer.from(keypair.secretKey));
+
+                return {
+                    success: true,
+                    publicKey: keypair.publicKey.toString(),
+                    secretKey: base58Secret,
+                    mnemonic: mnemonic,
+                    entropy: entropy.substring(0, 16) + '...'
+                };
+            }
+
+            async createShadowAddress() {
+                if (!this.publicKey || !this.backendConnected) return;
+
+                try {
+                    const shadowSeed = Math.floor(Math.random() * 1000000000);
+                    const response = await fetch(`${this.backendUrl}/api/shadow-address`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            mainWalletPublicKey: this.publicKey.toString(),
+                            shadowSeed: shadowSeed
+                        })
+                    });
+
+                    if (response.ok) {
+                        const shadowData = await response.json();
+                        console.log('🕵️ Shadow address created:', shadowData.shadowAddress);
+                        this.showNotification('🕵️ Shadow address generated for privacy', 'success');
+                    }
+                } catch (error) {
+                    console.log('ℹ️ Shadow address creation failed:', error.message);
+                }
+            }
+
+            displayZenithMnemonic(warning) {
+                const confirmed = confirm(
+                    `🚨 ZENITH WALLET - BLOCKCHAIN WARNING\n\n` +
+                    `${warning}\n\n` +
+                    `⚠️ ZENITH SECURITY FEATURES:\n` +
+                    `• Military-grade encryption active\n` +
+                    `• Shadow addresses auto-generated\n` +
+                    `• Stealth mode ready\n` +
+                    `• Transaction mixing available\n\n` +
+                    `⚠️ FINANCIAL WARNING:\n` +
+                    `• This gives access to REAL cryptocurrency\n` +
+                    `• Anyone with access controls ALL funds\n` +
+                    `• ZENITH is not responsible for losses\n\n` +
+                    `Click OK to confirm you understand the risks.`
+                );
+
+                if (!confirmed) {
+                    throw new Error('User rejected ZENITH security terms');
+                }
+
+                // Store in secure memory
+                this.securityTermsAccepted = true;
+                this.stealthModeEnabled = true;
+
+                // Enable stealth mode on backend
+                if (this.backendConnected) {
+                    fetch(`${this.backendUrl}/api/wallet/stealth-mode`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            publicKey: this.publicKey.toString(),
+                            enabled: true
+                        })
+                    });
                 }
             }
 
@@ -1074,27 +1188,116 @@ Type 'help' for available commands.
                 if (!this.publicKey) return;
 
                 try {
-                    this.showNotification('Updating balance...', 'info');
+                    this.showNotification('Updating ZENITH balance...', 'info');
 
-                    const connection = this.connection || this.mockConnection;
+                    let balanceData;
 
-                    // Get SOL balance
-                    const balance = await connection.getBalance(this.publicKey);
-                    this.balance = balance / 1e9;
-                    this.updateStatus('solBalance', this.balance.toFixed(3));
+                    // Try backend first
+                    if (this.backendConnected) {
+                        try {
+                            const response = await fetch(`${this.backendUrl}/api/wallet/balance/${this.publicKey.toString()}`);
+                            if (response.ok) {
+                                balanceData = await response.json();
+                                console.log('💰 Balance via ZENITH Backend');
+                            } else {
+                                throw new Error('Backend balance fetch failed');
+                            }
+                        } catch (error) {
+                            console.log('⚠️ Backend balance failed, using direct:', error.message);
+                            balanceData = await this.updateBalanceDirect();
+                        }
+                    } else {
+                        balanceData = await this.updateBalanceDirect();
+                    }
 
-                    // Get SPL tokens
-                    await this.updateTokens();
+                    if (balanceData.success) {
+                        this.balance = balanceData.solBalance;
+                        this.updateStatus('solBalance', this.balance.toFixed(3));
+                        this.updateStatus('tokenCount', balanceData.tokenCount.toString());
 
-                    console.log('💰 Balance updated:', this.balance, 'SOL');
-                    this.showNotification('Balance updated successfully', 'success');
+                        // Update token display
+                        this.displayTokens(balanceData.tokens || []);
+
+                        console.log('💰 ZENITH Balance updated:', this.balance, 'SOL');
+                        this.showNotification('Balance updated successfully', 'success');
+                    } else {
+                        throw new Error('Balance fetch failed');
+                    }
 
                 } catch (error) {
                     console.error('❌ Error updating balance:', error);
                     this.updateStatus('solBalance', '0.000');
                     this.updateStatus('tokenCount', '0');
-                    this.showNotification('Balance update failed - using offline mode', 'warning');
+                    this.showNotification('Balance update failed - using cached data', 'warning');
                 }
+            }
+
+            async updateBalanceDirect() {
+                const connection = this.connection || this.mockConnection;
+
+                // Get SOL balance
+                const balance = await connection.getBalance(this.publicKey);
+                const solBalance = balance / 1e9;
+
+                // Get SPL tokens
+                const tokenAccounts = await connection.getParsedTokenAccountsByOwner(
+                    this.publicKey,
+                    { programId: new solanaWeb3.PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA') }
+                );
+
+                const tokens = tokenAccounts.value.map(account => {
+                    const parsedInfo = account.account.data.parsed.info;
+                    return {
+                        mint: parsedInfo.mint,
+                        amount: parsedInfo.tokenAmount.uiAmount,
+                        decimals: parsedInfo.tokenAmount.decimals
+                    };
+                });
+
+                return {
+                    success: true,
+                    solBalance: solBalance,
+                    tokens: tokens,
+                    tokenCount: tokens.length
+                };
+            }
+
+            displayTokens(tokens) {
+                const tokensDisplay = document.getElementById('splTokensDisplay');
+                const tokensList = document.getElementById('tokensList');
+
+                if (tokens.length === 0) {
+                    tokensDisplay.style.display = 'none';
+                    return;
+                }
+
+                tokensDisplay.style.display = 'block';
+
+                let html = '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px;">';
+
+                tokens.forEach(token => {
+                    const symbol = this.getTokenSymbol(token.mint);
+                    html += `
+                        <div style="background: rgba(0,0,0,0.3); padding: 15px; border-radius: 5px; border: 1px solid rgba(0,255,65,0.3);">
+                            <div style="display: flex; justify-content: space-between; align-items: center;">
+                                <div>
+                                    <div style="color: #00FFFF; font-family: 'Space Mono', monospace; font-size: 0.8rem;">
+                                        ${symbol}
+                                    </div>
+                                    <div style="color: #00FF41; font-size: 1.2rem; font-weight: bold;">
+                                        ${token.amount.toFixed(token.decimals)}
+                                    </div>
+                                    <div style="color: #FFB000; font-family: 'Space Mono', monospace; font-size: 0.7rem;">
+                                        ${token.mint.slice(0, 8)}...${token.mint.slice(-8)}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                html += '</div>';
+                tokensList.innerHTML = html;
             }
 
             async updateTokens() {
@@ -1286,12 +1489,49 @@ Learn more at: zenithwallet.io
                     return;
                 }
 
-                this.showNotification('Getting swap quote...', 'info');
+                this.showNotification('Getting ZENITH privacy swap quote...', 'info');
 
                 try {
                     const fromToken = document.getElementById('fromToken').value;
                     const toToken = document.getElementById('toToken').value;
 
+                    let swapData;
+
+                    // Try backend privacy swap first
+                    if (this.backendConnected) {
+                        try {
+                            const response = await fetch(`${this.backendUrl}/api/swap/privacy`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({
+                                    inputToken: fromToken,
+                                    outputToken: toToken,
+                                    inputAmount: parseFloat(fromAmount),
+                                    minOutputAmount: parseFloat(fromAmount) * 0.98 // 2% slippage max
+                                })
+                            });
+
+                            if (response.ok) {
+                                swapData = await response.json();
+                                console.log('🔄 ZENITH Privacy Swap loaded');
+
+                                if (swapData.success) {
+                                    document.getElementById('toAmount').value = swapData.route.output.toFixed(6);
+                                    this.showNotification(`🕵️ Privacy swap loaded! Privacy: ${swapData.privacy}`, 'success');
+
+                                    // Show shadow addresses info
+                                    if (swapData.shadowAddresses) {
+                                        console.log('🕵️ Shadow addresses for privacy:', swapData.shadowAddresses.length);
+                                    }
+                                    return;
+                                }
+                            }
+                        } catch (error) {
+                            console.log('⚠️ Backend swap failed, using Jupiter:', error.message);
+                        }
+                    }
+
+                    // Fallback to Jupiter direct API
                     const quoteResponse = await fetch(`https://quote-api.jup.ag/v6/quote?inputMint=${fromToken}&outputMint=${toToken}&amount=${fromAmount * 1000000000}&slippage=1`);
                     const quote = await quoteResponse.json();
 
@@ -1303,7 +1543,7 @@ Learn more at: zenithwallet.io
                     const outputAmount = quote.outAmount / 1000000000;
                     document.getElementById('toAmount').value = outputAmount.toFixed(6);
 
-                    this.showNotification('Swap quote loaded! Ready to execute.', 'success');
+                    this.showNotification('Jupiter swap quote loaded! Ready to execute.', 'success');
 
                 } catch (error) {
                     console.error('Swap error:', error);
