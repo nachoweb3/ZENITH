@@ -1,0 +1,27 @@
+[package]
+name = "zenith-vault"
+version = "0.1.0"
+description = "ZENITH Vault Program - Privacy-focused Solana smart contract"
+edition = "2021"
+
+[lib]
+crate-type = ["cdylib", "lib"]
+
+[dependencies]
+anchor-lang = "0.30.0"
+anchor-spl = "0.30.0"
+solana-program = "1.18.0"
+thiserror = "1.0.50"
+num-derive = "0.4.0"
+num-traits = "0.2.16"
+
+[features]
+default = []
+cpi = ["no-entrypoint"]
+no-entrypoint = []
+no-log-ix-name = []
+no-idl = []
+unsafe-debug = []
+
+[profile.release]
+overflow-checks = true

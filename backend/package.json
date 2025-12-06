@@ -1,0 +1,67 @@
+{
+  "name": "zenith-dapp-backend",
+  "version": "1.0.0",
+  "description": "ZENITH DApp Backend - Professional Solana Wallet Backend",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js",
+    "test": "jest",
+    "build": "echo 'Build process not required for Node.js'",
+    "lint": "eslint .",
+    "format": "prettier --write ."
+  },
+  "keywords": [
+    "solana",
+    "blockchain",
+    "dapp",
+    "wallet",
+    "cryptocurrency",
+    "decentralized",
+    "web3",
+    "zenith"
+  ],
+  "author": "ZENITH Development Team",
+  "license": "MIT",
+  "dependencies": {
+    "@solana/web3.js": "^1.95.0",
+    "@solana/spl-token": "^0.4.8",
+    "express": "^4.18.2",
+    "socket.io": "^4.7.2",
+    "ws": "^8.14.0",
+    "cors": "^2.8.5",
+    "helmet": "^7.1.0",
+    "express-rate-limit": "^7.1.5",
+    "ipfs-http-client": "^60.0.1",
+    "axios": "^1.6.0",
+    "dotenv": "^16.3.1",
+    "joi": "^17.11.0",
+    "winston": "^3.11.0",
+    "compression": "^1.7.4",
+    "express-validator": "^7.0.1"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1",
+    "jest": "^29.7.0",
+    "supertest": "^6.3.3",
+    "eslint": "^8.54.0",
+    "prettier": "^3.1.0",
+    "@types/node": "^20.8.10"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=9.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/nachoweb3/ZENITH.git"
+  },
+  "bugs": {
+    "url": "https://github.com/nachoweb3/ZENITH/issues"
+  },
+  "homepage": "https://zenithwallet.io",
+  "funding": {
+    "type": "github",
+    "url": "https://github.com/sponsors/nachoweb3"
+  }
+}
