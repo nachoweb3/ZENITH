@@ -79,15 +79,14 @@ Abre tu navegador y visita:
 ```
 zenith-wallet/
 ├── zenith-complete.html   # Wallet principal con tema verde
-├── index.html             # Portfolio personal
-├── index-gh-pages.html    # Versión para GitHub Pages
+├── index-gh-pages.html    # Versión para GitHub Pages con blockchain real
 ├── style.css              # Estilos generales
 ├── server.js              # Servidor Node.js
 ├── package.json           # Dependencias
 ├── chrome-extension/      # Extensión para navegador
 ├── zenith-wallet/         # Proyectos relacionados
 ├── public/                # Archivos estáticos
-└── js-portfolio/          # Scripts JavaScript
+└── README.md              # Documentación del proyecto
 ```
 
 ## 💻 Comandos de Terminal
