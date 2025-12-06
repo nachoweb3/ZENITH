@@ -2,28 +2,9 @@
 resolution = true
 skip-lint = false
 
-[programs.mainnet]
-zenith_vault = "ZEN1VAuLT11111111111111111111111111111111"
-
-[programs.devnet]
-zenith_vault = "ZEN1VAuLTDev111111111111111111111111111111"
-
 [programs.localnet]
 zenith_vault = "ZEN1VAuLT11111111111111111111111111111111"
 
-[registry]
-url = "https://anchor.projectserum.com"
-
 [provider]
-cluster = "mainnet"
+cluster = "localnet"
 wallet = "~/.config/solana/id.json"
-
-[scripts]
-test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
-
-[toolchain]
-anchor_version = "0.30.0"
-
-[[test.validator.account]]
-address = "ZEN1VAuLT11111111111111111111111111111111"
-filename = "programs/zenith-vault/target/deploy/zenith_vault.json"
