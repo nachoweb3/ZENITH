@@ -33,7 +33,7 @@ npm start
 
 Abre tu navegador y visita:
 - **Principal**: `http://localhost:3001/zenith-complete.html`
-- **GitHub Pages**: `https://nachoweb3.github.io/ZENITH/` (✅ **BLOCKCHAIN REAL ACTIVADA**)
+- **GitHub Pages**: `https://nachoweb3.github.io/ZENITH/` (✅ **BLOCKCHAIN REAL ACTIVADA - CORREGIDO**)
 
 ### 3. Conectar Wallet
 
@@ -154,8 +154,8 @@ zenith-wallet/
 
 ## 🚀 Deploy y Publicación
 
-### GitHub Pages (✅ CON BLOCKCHAIN REAL)
-1. **Deploy actual**: `https://nachoweb3.github.io/ZENITH/`
+### GitHub Pages (✅ CON BLOCKCHAIN REAL - AHORA FUNCIONAL)
+1. **Deploy actual**: `https://nachoweb3.github.io/ZENITH/` ✅ **CORREGIDO**
 2. **Funcionalidades activas**:
    - Conexión real a Solana mainnet
    - Swaps reales vía Jupiter DEX
@@ -163,6 +163,7 @@ zenith-wallet/
    - Transacciones en vivo
 3. **Bibliotecas Web3**: Solana Web3.js, SPL Token, BIP39
 4. **Multi-endpoint**: Solana API, Project Serum, Ankr
+5. **Archivo principal**: index.html (versión blockchain real)
 
 ### Servidor Local
 ```bash
